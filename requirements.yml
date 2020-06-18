@@ -1,0 +1,8 @@
+---
+roles:
+- adfinis-sygroup.grub
+- geerlingguy.nodejs
+
+collections:
+- sbaerlocher.virtualization
+- ansible.posix
