@@ -1,0 +1,118 @@
+---
+- hosts: home
+  roles:
+#    - adfinis-sygroup.grub
+    - geerlingguy.nodejs
+  become: true  # use sudo
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  pre_tasks:
+    - name: apt update
+      apt:
+        update_cache: yes
+    - name: apt upgrade
+      apt:
+        name: "*"
+        state: latest
+    - name: apt dist-upgrade
+      apt:
+        upgrade: dist
+  tasks:
+    - name: apt-key - virtualbox
+      apt_key:
+        url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+    - name: apt-repo - virtualbox
+      apt_repository:
+        repo: deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian bionic contrib
+        filename: virtualbox
+
+    - name: apt-key - chrome
+      apt_key:
+        url: https://dl.google.com/linux/linux_signing_key.pub
+    - name: apt-repo - chrome
+      apt_repository:
+        repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+        filename: google-chrome
+
+    - name: apt-repo - Python
+      apt_repository:
+        repo: ppa:deadsnakes/ppa
+    - name: APT Install
+      apt:
+        pkg:
+        - mdadm
+        - vlc
+        - ibus-table-cangjie3
+        - ibus-table-quick
+        - git
+        - terminator
+        - gnupg
+        - gparted
+        - pinta
+        - filezilla
+        - gcc
+        - g++
+        - make
+        - python3.7
+        - virtualbox-6.1
+        - google-chrome-stable
+
+    - name: Autoremove
+      apt:
+        autoremove: yes
+
+    - name: Snap Classic
+      snap:
+        name:
+          - intellij-idea-community
+          - pycharm-community
+          - sublime-text
+          - code
+          - slack
+          - google-cloud-sdk 
+          - aws-cli
+        classic: yes
+    - name: Snap
+      snap: 
+        name:
+          - dbeaver-ce
+          - discord
+          - zoom-client
+          - rambox
+          - postman
+
+    - name: edit /etc/default/grub
+      lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 nopti noibrs noibpb nospec nospectre_v2 nospec_store_bypass_disable"'
+        backrefs: yes
+
+    - name: Update Grub
+      shell: /usr/sbin/update-grub
+
+    - name: edit /etc/fstab
+      replace:
+        path: /etc/fstab
+        regexp: '(\s+)errors(.*)?$'
+        replace: '\1noatime,errors\2'
+        validate: '/bin/mount -f -T %s'
+
+    - name: edit /etc/sysctl.conf vm.swappiness
+      ansible.posix.sysctl:
+        name: vm.swappiness
+        value: '10'
+    - name: edit /etc/sysctl.conf vm.dirty_background_ratio
+      ansible.posix.sysctl:
+        name: vm.dirty_background_ratio
+        value: '10'
+    - name: edit /etc/sysctl.conf vm.dirty_ratio
+      ansible.posix.sysctl:
+        name: vm.dirty_ratio
+        value: '5'
+    - name: edit /etc/sysctl.conf fs.inotify.max_user_watches
+      ansible.posix.sysctl:
+        name: fs.inotify.max_user_watches
+        value: '524288'
+        reload: yes
+

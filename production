@@ -1,0 +1,18 @@
+#[desktop]
+#192.168.1.180	ansible_ssh_user=jimmy
+
+[desktop_d]
+192.168.1.180	ansible_ssh_user=jimmy
+
+[notebook_dell_d]
+192.168.1.180	ansible_ssh_user=jimmy
+
+[notebook_t430_d]
+192.168.1.180	ansible_ssh_user=jimmy
+
+[home:children]
+desktop_d
+
+[notebook:children]
+notebook_dell_d
+notebook_t430_d
