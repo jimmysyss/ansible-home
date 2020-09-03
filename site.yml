@@ -64,6 +64,7 @@
         - subversion
         - sshpass
         - ulauncher
+        - gnome-tweak-tool
     - name: Autoremove
       apt:
         autoremove: yes
