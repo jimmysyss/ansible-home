@@ -1,5 +1,4 @@
-#[desktop]
-#192.168.1.180	ansible_ssh_user=jimmy
+#[desktop] 192.168.1.180	ansible_ssh_user=jimmy
 
 [desktop_d]
 192.168.1.4	ansible_ssh_user=jimmy
