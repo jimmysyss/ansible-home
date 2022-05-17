@@ -34,12 +34,26 @@
         repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
         filename: google-chrome
 
+    - name: apt-repo - Terraform
+      apt_repository:
+        repo: deb [arch=amd64] https://apt.releases.hashicorp.com focal main
+        filename: google-chrome
+
     - name: apt-repo - Python
       apt_repository:
         repo: ppa:deadsnakes/ppa
+
     - name: apt-repo - ULauncher
       apt_repository:
         repo: ppa:agornostal/ulauncher
+
+    - name: apt-repo - Ansible
+      apt_repository:
+        repo: ppa:ansible/ansible
+
+    - name: apt-repo - OpenJDK
+      apt_repository:
+        repo: ppa:openjdk-r/ppa
 
     - name: APT Install
       apt:
@@ -56,15 +70,22 @@
         - filezilla
         - gcc
         - g++
+        - curl
+        - gnupg
+        - software-properties-common
         - make
-        - python3.7
-        - virtualbox-6.1
+        - python3.11
+#        - virtualbox-6.1
         - google-chrome-stable
         - net-tools
-        - subversion
+#        - subversion
         - sshpass
         - ulauncher
         - gnome-tweak-tool
+        - stow
+        - terraform
+        - ansible
+        - openjdk-11-jdk
     - name: Autoremove
       apt:
         autoremove: yes
@@ -79,6 +100,7 @@
           - slack
           - google-cloud-sdk 
           - aws-cli
+          - gitkraken 
         classic: yes
     - name: Snap
       snap: 
@@ -86,8 +108,8 @@
           - dbeaver-ce
           - discord
           - zoom-client
-          - rambox
           - postman
+          - teams
 
     - name: edit /etc/default/grub
       lineinfile:
