@@ -34,10 +34,13 @@
         repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
         filename: google-chrome
 
+    - name: apt-key - Terraform
+      apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
     - name: apt-repo - Terraform
       apt_repository:
         repo: deb [arch=amd64] https://apt.releases.hashicorp.com focal main
-        filename: google-chrome
+        filename: terraform
 
     - name: apt-repo - Python
       apt_repository:
