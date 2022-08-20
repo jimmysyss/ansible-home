@@ -1,5 +1,12 @@
 #[desktop] 192.168.1.180	ansible_ssh_user=jimmy
 
+[server]
+jimmysyss.duckdns.org:50022	ansible_ssh_user=pi
+jimmysyss.duckdns.org:60022	ansible_ssh_user=jimmy
+server1.jimmysyss.com	ansible_ssh_user=ubuntu
+server2.jimmysyss.com	ansible_ssh_user=ubuntu
+server3.jimmysyss.com	ansible_ssh_user=ubuntu
+
 [desktop_d]
 192.168.1.4	ansible_ssh_user=jimmy
 
