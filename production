@@ -1,23 +1,21 @@
-#[desktop] 192.168.1.180	ansible_ssh_user=jimmy
-
 [server]
-jimmysyss.duckdns.org:50022	ansible_ssh_user=pi
-jimmysyss.duckdns.org:60022	ansible_ssh_user=jimmy
-server1.jimmysyss.com	ansible_ssh_user=ubuntu
-server2.jimmysyss.com	ansible_ssh_user=ubuntu
-server3.jimmysyss.com	ansible_ssh_user=ubuntu
+jimmysyss.duckdns.org:50022	ansible_user=pi
+jimmysyss.duckdns.org:60022	ansible_user=jimmy
+server1.jimmysyss.com	ansible_user=ubuntu
+server2.jimmysyss.com	ansible_user=ubuntu
+server3.jimmysyss.com	ansible_user=ubuntu
 
-[desktop_d]
-192.168.1.63	ansible_ssh_user=jimmy
+[localhost_d]
+127.0.0.1	ansible_user=jimmy
 
 [notebook_dell_d]
-192.168.1.180	ansible_ssh_user=jimmy
+192.168.1.180	ansible_user=jimmy
 
 [notebook_t430_d]
-192.168.1.133	ansible_ssh_user=jimmy
+192.168.1.133	ansible_user=jimmy
 
 [home:children]
-desktop_d
+localhost_d
 
 [notebook:children]
 notebook_dell_d

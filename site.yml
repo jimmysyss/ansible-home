@@ -18,20 +18,12 @@
       apt:
         upgrade: dist
   tasks:
-    - name: apt-key - virtualbox
-      apt_key:
-        url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
-    - name: apt-repo - virtualbox
-      apt_repository:
-        repo: deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian focal contrib
-        filename: virtualbox
-
     - name: apt-key - chrome
       apt_key:
         url: https://dl.google.com/linux/linux_signing_key.pub
     - name: apt-repo - chrome
       apt_repository:
-        repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+        repo: deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main
         filename: google-chrome
 
     - name: apt-key - Terraform
@@ -39,8 +31,16 @@
         url: https://apt.releases.hashicorp.com/gpg
     - name: apt-repo - Terraform
       apt_repository:
-        repo: deb [arch=amd64] https://apt.releases.hashicorp.com focal main
+        repo: deb [arch=amd64] https://apt.releases.hashicorp.com jammy main
         filename: terraform
+
+    - name: apt-key - Docker
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu jammy stable
+        filename: docker
 
     - name: apt-repo - Python
       apt_repository:
@@ -78,17 +78,21 @@
         - software-properties-common
         - make
         - python3.11
-#        - virtualbox-6.1
         - google-chrome-stable
         - net-tools
-#        - subversion
         - sshpass
         - ulauncher
-        - gnome-tweak-tool
+        - gnome-tweaks
         - stow
         - terraform
         - ansible
         - openjdk-11-jdk
+        - openjdk-17-jdk
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+
     - name: Autoremove
       apt:
         autoremove: yes
@@ -99,11 +103,11 @@
           - intellij-idea-community
           - pycharm-community
           - sublime-text
+          - sublime-merge
           - code
           - slack
           - google-cloud-sdk 
           - aws-cli
-          - gitkraken 
         classic: yes
     - name: Snap
       snap: 
@@ -113,12 +117,13 @@
           - zoom-client
           - postman
           - teams
+          - telegram-desktop
 
     - name: edit /etc/default/grub
       lineinfile:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$'
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 nopti noibrs noibpb nospec nospectre_v2 nospec_store_bypass_disable mitigations=off"'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash consoleblank=60 mitigations=off"'
         backrefs: yes
 
     - name: Update Grub
@@ -138,7 +143,7 @@
     - name: edit /etc/sysctl.conf vm.dirty_background_ratio
       ansible.posix.sysctl:
         name: vm.dirty_background_ratio
-        value: '10'
+        value: '5'
     - name: edit /etc/sysctl.conf vm.dirty_ratio
       ansible.posix.sysctl:
         name: vm.dirty_ratio
@@ -147,5 +152,23 @@
       ansible.posix.sysctl:
         name: fs.inotify.max_user_watches
         value: '524288'
+    - name: edit /etc/sysctl.conf net.ipv6.conf.all.disable_ipv6
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.all.disable_ipv6
+        value: '1'
+    - name: edit /etc/sysctl.conf net.ipv6.conf.default.disable_ipv6
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.default.disable_ipv6
+        value: '1'        
         reload: yes
+
+    - name: Ensure group "docker" exists
+      ansible.builtin.group:
+        name: docker
+
+    - name: adding existing user '{{ ansible_user }}' to group docker
+      user:
+        name: '{{ ansible_user }}'
+        groups: docker
+        append: yes
 
