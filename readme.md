@@ -24,3 +24,6 @@ sudo apt install software-properties-common
 sudo apt-add-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible
 ```
+
+
+ansible-playbook -i production site.yml --limit desktop_d -K --private-key ~/.ssh/oracle_cloud
