@@ -1,0 +1,10 @@
+- hosts: all
+  become: true  # use sudo
+  # vars:
+  #   ansible_python_interpreter: /usr/bin/python3
+
+- name: Backup MySQL
+  import_playbook: playbooks/backup_mysql.yml
+
+- name: Backup PostgreSQL
+  import_playbook: playbooks/backup_postgresql.yml
