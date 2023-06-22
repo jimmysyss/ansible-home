@@ -1,8 +1,10 @@
----
-roles:
-- adfinis-sygroup.grub
-- geerlingguy.nodejs
+# ---
+# roles:
+# - adfinis-sygroup.grub
+# - geerlingguy.nodejs
 
 collections:
-- sbaerlocher.virtualization
-- ansible.posix
+  - community.mysql
+  - community.postgresql
+# - sbaerlocher.virtualization
+# - ansible.posix
