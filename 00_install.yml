@@ -1,8 +1,6 @@
 ---
-- hosts: home
-  roles:
-#    - adfinis-sygroup.grub
-    - geerlingguy.nodejs
+- hosts: all
+  #roles:
   become: true  # use sudo
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -18,6 +16,53 @@
       apt:
         upgrade: dist
   tasks:
+    - name: edit /etc/default/grub
+      lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash consoleblank=60 mitigations=off"'
+        backrefs: yes
+
+    - name: Print a variable
+      ansible.builtin.debug:
+        var: with_gui
+
+    - name: Update Grub
+      shell: /usr/sbin/update-grub
+
+    - name: edit /etc/fstab
+      replace:
+        path: /etc/fstab
+        regexp: '(\s+)errors(.*)?$'
+        replace: '\1noatime,errors\2'
+        validate: '/bin/mount -f -T %s'
+
+    - name: edit /etc/sysctl.conf vm.swappiness
+      ansible.posix.sysctl:
+        name: vm.swappiness
+        value: '10'
+    - name: edit /etc/sysctl.conf vm.dirty_background_ratio
+      ansible.posix.sysctl:
+        name: vm.dirty_background_ratio
+        value: '5'
+    - name: edit /etc/sysctl.conf vm.dirty_ratio
+      ansible.posix.sysctl:
+        name: vm.dirty_ratio
+        value: '5'
+    - name: edit /etc/sysctl.conf fs.inotify.max_user_watches
+      ansible.posix.sysctl:
+        name: fs.inotify.max_user_watches
+        value: '524288'
+    - name: edit /etc/sysctl.conf net.ipv6.conf.all.disable_ipv6
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.all.disable_ipv6
+        value: '1'
+    - name: edit /etc/sysctl.conf net.ipv6.conf.default.disable_ipv6
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.default.disable_ipv6
+        value: '1'        
+        reload: yes
+
     - name: apt-key - chrome
       apt_key:
         url: https://dl.google.com/linux/linux_signing_key.pub
@@ -58,19 +103,20 @@
       apt_repository:
         repo: ppa:openjdk-r/ppa
 
-    - name: APT Install
+    - name: apt-key - NodeJS
+      apt_key:
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    - name: Add NodeJS Repository
+      apt_repository:
+        repo: deb https://deb.nodesource.com/node_18.x jammy main
+        filename: nodejs
+
+    - name: APT Install (Non-GUI)
       apt:
         pkg:
         - mdadm
-        - vlc
-        - ibus-table-cangjie3
-        - ibus-table-quick
         - git
-        - terminator
         - gnupg
-        - gparted
-        - pinta
-        - filezilla
         - gcc
         - g++
         - curl
@@ -78,20 +124,33 @@
         - software-properties-common
         - make
         - python3.11
-        - google-chrome-stable
         - net-tools
         - sshpass
-        - ulauncher
-        - gnome-tweaks
         - stow
         - terraform
         - ansible
         - openjdk-11-jdk
         - openjdk-17-jdk
+        - nodejs
         - docker-ce
         - docker-ce-cli
         - containerd.io
         - docker-compose-plugin
+
+    - name: APT Install (GUI)
+      apt:
+        pkg:
+        - vlc
+        - ibus-table-cangjie3
+        - ibus-table-quick
+        - terminator
+        - gparted
+        - pinta
+        - filezilla
+        - google-chrome-stable
+        - ulauncher
+        - gnome-tweaks
+      when: with_gui == true
 
     - name: Autoremove
       apt:
@@ -109,6 +168,8 @@
           - google-cloud-sdk 
           - aws-cli
         classic: yes
+      when: with_gui == true
+
     - name: Snap
       snap: 
         name:
@@ -116,51 +177,9 @@
           - discord
           - zoom-client
           - postman
-          - teams
+          - teams-for-linux
           - telegram-desktop
-
-    - name: edit /etc/default/grub
-      lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"$'
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash consoleblank=60 mitigations=off"'
-        backrefs: yes
-
-    - name: Update Grub
-      shell: /usr/sbin/update-grub
-
-    - name: edit /etc/fstab
-      replace:
-        path: /etc/fstab
-        regexp: '(\s+)errors(.*)?$'
-        replace: '\1noatime,errors\2'
-        validate: '/bin/mount -f -T %s'
-
-    - name: edit /etc/sysctl.conf vm.swappiness
-      ansible.posix.sysctl:
-        name: vm.swappiness
-        value: '10'
-    - name: edit /etc/sysctl.conf vm.dirty_background_ratio
-      ansible.posix.sysctl:
-        name: vm.dirty_background_ratio
-        value: '5'
-    - name: edit /etc/sysctl.conf vm.dirty_ratio
-      ansible.posix.sysctl:
-        name: vm.dirty_ratio
-        value: '5'
-    - name: edit /etc/sysctl.conf fs.inotify.max_user_watches
-      ansible.posix.sysctl:
-        name: fs.inotify.max_user_watches
-        value: '524288'
-    - name: edit /etc/sysctl.conf net.ipv6.conf.all.disable_ipv6
-      ansible.posix.sysctl:
-        name: net.ipv6.conf.all.disable_ipv6
-        value: '1'
-    - name: edit /etc/sysctl.conf net.ipv6.conf.default.disable_ipv6
-      ansible.posix.sysctl:
-        name: net.ipv6.conf.default.disable_ipv6
-        value: '1'        
-        reload: yes
+      when: with_gui == true
 
     - name: Ensure group "docker" exists
       ansible.builtin.group:

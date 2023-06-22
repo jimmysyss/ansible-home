@@ -1,0 +1,35 @@
+- hosts: all
+  become: true  # use sudo
+  pre_tasks:
+  - name: apt update
+    apt:
+      update_cache: yes
+  - name: apt upgrade
+    apt:
+      name: "*"
+      state: latest
+  - name: apt dist-upgrade
+    apt:
+      upgrade: dist
+  - name: Autoremove
+    apt:
+      autoremove: yes
+  tasks:
+  - name: Print a variable
+    ansible.builtin.debug:
+      msg: HELLO WORLD
+    # tags: hello
+
+  # MySQL Backup  
+  # - name: Backup MySQL
+  #   import_playbook: playbooks/backup_mysql.yml
+    # tags: mysql
+
+  # PostgresSQL Backup
+  # - name: Backup PostgreSQL
+    # import_playbook: playbooks/backup_postgresql.yml
+    # tags: postgresql
+
+  # Folder Backup
+  # - name: Backup Files
+    # import_playbook: playbooks/backup_postgresql.yml

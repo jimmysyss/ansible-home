@@ -27,3 +27,8 @@ sudo apt install ansible
 
 
 ansible-playbook -i production site.yml --limit desktop_d -K --private-key ~/.ssh/oracle_cloud
+
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/oracle_cloud
+
+pip3 install PyMySQL
