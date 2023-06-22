@@ -1,22 +1,18 @@
 [server]
-jimmysyss.duckdns.org:50022	ansible_user=pi
-jimmysyss.duckdns.org:60022	ansible_user=jimmy
+server0.jimmysyss.com   ansible_user=ubuntu
 server1.jimmysyss.com	ansible_user=ubuntu
 server2.jimmysyss.com	ansible_user=ubuntu
 server3.jimmysyss.com	ansible_user=ubuntu
 
-[localhost_d]
-127.0.0.1	ansible_user=jimmy
+[local]
+jimmysyss.duckdns.org:50022	    ansible_user=pi
+openmediavault	ansible_user=jimmy
 
-[notebook_dell_d]
-192.168.1.180	ansible_user=jimmy
+[desktop]
+192.168.1.178
 
-[notebook_t430_d]
-192.168.1.133	ansible_user=jimmy
+[mysql]
+server2.jimmysyss.com	ansible_user=ubuntu
 
-[home:children]
-localhost_d
-
-[notebook:children]
-notebook_dell_d
-notebook_t430_d
+[postgresql]
+server2.jimmysyss.com	ansible_user=ubuntu
