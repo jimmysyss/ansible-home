@@ -1,18 +1,20 @@
-[server]
+[server0]
 server0.jimmysyss.com   ansible_user=ubuntu
+
+[server1]
 server1.jimmysyss.com	ansible_user=ubuntu
+
+[server2]
 server2.jimmysyss.com	ansible_user=ubuntu
+
+[server3]
 server3.jimmysyss.com	ansible_user=ubuntu
 
-[local]
-jimmysyss.duckdns.org:50022	    ansible_user=pi
-openmediavault	ansible_user=jimmy
+[server7]
+server7.jimmysyss.com	ansible_user=ubuntu
 
-[desktop]
-192.168.1.178
+[server8]
+server8.jimmysyss.com	ansible_user=ubuntu
 
-[mysql]
-server2.jimmysyss.com	ansible_user=ubuntu
-
-[postgresql]
-server2.jimmysyss.com	ansible_user=ubuntu
+[pi]
+192.168.1.154	ansible_user=pi
