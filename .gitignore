@@ -1,0 +1,21 @@
+# Ansible specific
+*.retry
+.ansible/
+
+# Sensitive data (use Ansible Vault for better security)
+credentials.yml
+vault.yml
+*.vault
+
+# Logs and temporary files
+*.log
+tmp/
+
+# Local inventory or configuration
+inventory/local_hosts
+hosts.local
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
