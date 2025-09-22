@@ -1,0 +1,24 @@
+[servers]
+server0.jimmysyss.com	ansible_user=ubuntu
+server1.jimmysyss.com	ansible_user=ubuntu
+server2.jimmysyss.com	ansible_user=ubuntu
+server3.jimmysyss.com	ansible_user=ubuntu
+server7.jimmysyss.com	ansible_user=ubuntu
+server8.jimmysyss.com	ansible_user=ubuntu
+
+[home]
+desktop1	            ansible_user=jimmy
+pi          	        ansible_user=pi
+openmediavault          ansible_user=root
+proxmox1	            ansible_user=root
+
+[gateway]
+server3.jimmysyss.com
+server7.jimmysyss.com
+
+[desktop]
+desktop1
+
+[no_reboot]
+server0.jimmysyss.com
+server1.jimmysyss.com
