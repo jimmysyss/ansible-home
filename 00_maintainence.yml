@@ -1,23 +1,25 @@
-- hosts: all
+- hosts: "servers"
   become: true  # use sudo
-  pre_tasks:
-  - name: apt update
+  tasks:
+  - name: Apt Update
     apt:
       update_cache: yes
-  - name: apt upgrade
-    apt:
-      name: "*"
-      state: latest
-  - name: apt dist-upgrade
-    apt:
       upgrade: dist
   - name: Autoremove
     apt:
       autoremove: yes
-  tasks:
+      autoclean: yes
+  - name: Reboot if needed
+    reboot:
+      msg: "Reboot initiated by Ansible for a package upgrade"
+      pre_reboot_delay: 30
+      post_reboot_delay: 60
+      reboot_timeout: 600
+    when: 
+      inventory_hostname not in groups.no_reboot
   - name: Print a variable
     ansible.builtin.debug:
-      msg: HELLO WORLD
+      msg: Maintenance complete!
     # tags: hello
 
   # MySQL Backup  
