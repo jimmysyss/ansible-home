@@ -1,0 +1,3 @@
+---
+# Enables or disables placeholder tasks for this role.
+hosting_enabled: false

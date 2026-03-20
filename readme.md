@@ -9,7 +9,7 @@ Install Ansible Collections and Roles locally, -K means prompt for Sudoer passwo
 ```
 ansible-galaxy collection install -r requirements.yml 
 ansible-galaxy role install -r requirements.yml 
-ansible-playbook -i production site.yml --limit home -K
+ansible-playbook -i inventory/production site.yml --limit home -K
 ```
 
 Because my script uses APT, Ubuntu may lock down the DPKG update, you may need to remove the lock file
@@ -26,9 +26,20 @@ sudo apt install ansible
 ```
 
 
-ansible-playbook -i production site.yml --limit desktop_d -K --private-key ~/.ssh/oracle_cloud
+ansible-playbook -i inventory/production site.yml --limit desktop1 -K --private-key ~/.ssh/oracle_cloud
 
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/oracle_cloud
 
 pip3 install PyMySQL
+
+Validate syntax before any live run:
+```
+ansible-playbook -i inventory/production site.yml --syntax-check
+```
+
+Issue #5 validation target (server8):
+```
+ansible-playbook -i inventory/production site.yml --limit server8.jimmysyss.com --check --diff -K
+ansible-playbook -i inventory/production site.yml --limit server8.jimmysyss.com -K
+```

@@ -1,0 +1,7 @@
+---
+- name: Show nginx role placeholder
+  ansible.builtin.debug:
+    msg: "TODO: implement nginx configuration tasks."
+  when: nginx_enabled | bool
+  tags:
+    - always

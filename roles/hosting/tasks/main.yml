@@ -1,0 +1,7 @@
+---
+- name: Show hosting role placeholder
+  ansible.builtin.debug:
+    msg: "TODO: implement hosting stack tasks."
+  when: hosting_enabled | bool
+  tags:
+    - always

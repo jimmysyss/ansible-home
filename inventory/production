@@ -5,6 +5,7 @@ server2.jimmysyss.com	ansible_user=ubuntu
 server3.jimmysyss.com	ansible_user=ubuntu
 server7.jimmysyss.com	ansible_user=ubuntu
 server8.jimmysyss.com	ansible_user=ubuntu
+server9.jimmysyss.com	ansible_user=ubuntu
 
 [home]
 desktop1	            ansible_user=jimmy
@@ -20,4 +21,8 @@ server7.jimmysyss.com
 desktop1
 
 [no_reboot]
-server3.jimmysyss.com
+server0.jimmysyss.com
+server7.jimmysyss.com
+
+[database_backup_server]
+server0.jimmysyss.com
