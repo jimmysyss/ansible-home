@@ -1,0 +1,7 @@
+---
+- name: Show gateway role placeholder
+  ansible.builtin.debug:
+    msg: "TODO: implement gateway routing and firewall tasks."
+  when: gateway_enabled | bool
+  tags:
+    - always

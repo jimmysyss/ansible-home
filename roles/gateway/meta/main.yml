@@ -1,0 +1,11 @@
+---
+galaxy_info:
+  author: jimmysyss
+  description: Gateway, networking, and firewall configuration.
+  license: MIT
+  min_ansible_version: "2.13"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+dependencies: []
