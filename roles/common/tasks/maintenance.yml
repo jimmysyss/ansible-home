@@ -1,0 +1,30 @@
+---
+- name: Apt update and dist-upgrade
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+  tags:
+    - maintenance
+
+- name: Autoremove and autoclean packages
+  ansible.builtin.apt:
+    autoremove: true
+    autoclean: true
+  tags:
+    - maintenance
+
+- name: Reboot if needed
+  ansible.builtin.reboot:
+    msg: "Reboot initiated by Ansible for a package upgrade"
+    pre_reboot_delay: 30
+    post_reboot_delay: 60
+    reboot_timeout: 600
+  when: inventory_hostname not in groups.no_reboot
+  tags:
+    - maintenance
+
+- name: Print maintenance completion message
+  ansible.builtin.debug:
+    msg: Maintenance complete!
+  tags:
+    - maintenance

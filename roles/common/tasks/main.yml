@@ -1,0 +1,12 @@
+---
+- name: Run install tasks
+  ansible.builtin.include_tasks: install.yml
+  when: common_install_enabled | bool
+  tags:
+    - packages
+
+- name: Run maintenance tasks
+  ansible.builtin.include_tasks: maintenance.yml
+  when: common_maintenance_enabled | bool
+  tags:
+    - maintenance

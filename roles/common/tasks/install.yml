@@ -1,0 +1,198 @@
+---
+- name: Apt update
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Apt upgrade
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+- name: Apt dist-upgrade
+  ansible.builtin.apt:
+    upgrade: dist
+
+- name: Edit /etc/default/grub
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"$'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash consoleblank=60 mitigations=off"'
+    backrefs: true
+
+- name: Print a variable
+  ansible.builtin.debug:
+    var: with_gui
+
+- name: Update Grub
+  ansible.builtin.shell: /usr/sbin/update-grub
+  changed_when: false
+
+- name: Edit /etc/fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '(\s+)errors(.*)?$'
+    replace: '\1noatime,errors\2'
+    validate: '/bin/mount -f -T %s'
+
+- name: Set vm.swappiness
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: '10'
+
+- name: Set vm.dirty_background_ratio
+  ansible.posix.sysctl:
+    name: vm.dirty_background_ratio
+    value: '5'
+
+- name: Set vm.dirty_ratio
+  ansible.posix.sysctl:
+    name: vm.dirty_ratio
+    value: '5'
+
+- name: Set fs.inotify.max_user_watches
+  ansible.posix.sysctl:
+    name: fs.inotify.max_user_watches
+    value: '524288'
+
+- name: Disable IPv6 (all)
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.disable_ipv6
+    value: '1'
+
+- name: Disable IPv6 (default)
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.default.disable_ipv6
+    value: '1'
+    reload: true
+
+- name: Apt key - chrome
+  ansible.builtin.apt_key:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+
+- name: Apt repo - chrome
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main
+    filename: google-chrome
+
+- name: Apt key - Terraform
+  ansible.builtin.apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+
+- name: Apt repo - Terraform
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://apt.releases.hashicorp.com jammy main
+    filename: terraform
+
+- name: Apt key - Docker
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Add Docker repository
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu jammy stable
+    filename: docker
+
+- name: Apt repo - Python
+  ansible.builtin.apt_repository:
+    repo: ppa:deadsnakes/ppa
+
+- name: Apt repo - ULauncher
+  ansible.builtin.apt_repository:
+    repo: ppa:agornostal/ulauncher
+
+- name: Apt repo - Ansible
+  ansible.builtin.apt_repository:
+    repo: ppa:ansible/ansible
+
+- name: Apt repo - OpenJDK
+  ansible.builtin.apt_repository:
+    repo: ppa:openjdk-r/ppa
+
+- name: Apt key - NodeJS
+  ansible.builtin.apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
+- name: Add NodeJS repository
+  ansible.builtin.apt_repository:
+    repo: deb https://deb.nodesource.com/node_18.x jammy main
+    filename: nodejs
+
+- name: APT install (non-GUI)
+  ansible.builtin.apt:
+    pkg:
+      - mdadm
+      - git
+      - gnupg
+      - gcc
+      - g++
+      - curl
+      - gnupg
+      - software-properties-common
+      - make
+      - python3.11
+      - net-tools
+      - sshpass
+      - stow
+      - terraform
+      - ansible
+      - openjdk-11-jdk
+      - openjdk-17-jdk
+      - nodejs
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+
+- name: APT install (GUI)
+  ansible.builtin.apt:
+    pkg:
+      - vlc
+      - ibus-table-cangjie3
+      - ibus-table-quick
+      - terminator
+      - gparted
+      - pinta
+      - filezilla
+      - google-chrome-stable
+      - ulauncher
+      - gnome-tweaks
+  when: with_gui == true
+
+- name: Autoremove
+  ansible.builtin.apt:
+    autoremove: true
+
+- name: Snap classic
+  community.general.snap:
+    name:
+      - intellij-idea-community
+      - pycharm-community
+      - sublime-text
+      - sublime-merge
+      - code
+      - slack
+      - google-cloud-sdk
+      - aws-cli
+    classic: true
+  when: with_gui == true
+
+- name: Snap
+  community.general.snap:
+    name:
+      - dbeaver-ce
+      - discord
+      - zoom-client
+      - postman
+      - teams-for-linux
+      - telegram-desktop
+  when: with_gui == true
+
+- name: Ensure group docker exists
+  ansible.builtin.group:
+    name: docker
+
+- name: Add existing user to group docker
+  ansible.builtin.user:
+    name: '{{ ansible_user }}'
+    groups: docker
+    append: true

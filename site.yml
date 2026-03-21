@@ -1,0 +1,31 @@
+---
+# Primary playbook entry point for the ansible-home repository.
+
+- name: Apply common baseline
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - common
+
+- name: Configure desktop hosts
+  hosts: desktop
+  become: true
+  gather_facts: true
+  roles:
+    - desktop
+
+- name: Configure gateway hosts
+  hosts: gateway
+  become: true
+  gather_facts: true
+  roles:
+    - gateway
+
+- name: Configure hosting stack
+  hosts: servers
+  become: true
+  gather_facts: true
+  roles:
+    - hosting
+    - nginx

@@ -1,0 +1,18 @@
+---
+# Enables package installation/bootstrap tasks.
+common_install_enabled: true
+
+# Enables maintenance workflow (update/upgrade/reboot checks).
+common_maintenance_enabled: true
+
+# Controls whether apt cache should be refreshed.
+common_apt_update_cache: true
+
+# Controls whether apt dist-upgrade is applied.
+common_apt_upgrade_dist: true
+
+# Enables automatic reboot when required by the system.
+common_reboot_enabled: false
+
+# Maximum wait time for host to come back after reboot.
+common_reboot_timeout: 900

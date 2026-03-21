@@ -1,0 +1,7 @@
+---
+- name: Show desktop role placeholder
+  ansible.builtin.debug:
+    msg: "TODO: implement desktop GUI tasks."
+  when: desktop_enabled | bool
+  tags:
+    - always
