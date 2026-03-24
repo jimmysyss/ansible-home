@@ -10,3 +10,9 @@
   when: common_maintenance_enabled | bool
   tags:
     - maintenance
+
+- name: Run Docker Update Tasks
+  ansible.builtin.include_tasks: docker_update.yml
+  when: common_docker_update_enabled | bool
+  tags:
+    - docker_update

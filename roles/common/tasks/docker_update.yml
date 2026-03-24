@@ -1,0 +1,84 @@
+---
+- name: Discover Containers With Autoupdate Label
+  community.docker.docker_host_info:
+    containers: true
+    containers_filters:
+      label: "{{ common_docker_update_label }}"
+    verbose_output: true
+  register: common_docker_update_discovered
+  tags:
+    - docker_update
+
+- name: Pull And Recreate Discovered Containers
+  block:
+    - name: Pull Latest Images For Discovered Containers
+      community.docker.docker_image:
+        name: "{{ item.Image }}"
+        source: pull
+        force_source: "{{ common_docker_update_force | bool }}"
+      loop: "{{ common_docker_update_discovered.containers }}"
+      loop_control:
+        label: "{{ (item.Names | first) | regex_replace('^/', '') }}"
+      register: common_docker_update_pull_results
+      tags:
+        - docker_update
+
+    - name: Recreate Containers When Images Change
+      community.docker.docker_container:
+        name: "{{ (item.item.Names | first) | regex_replace('^/', '') }}"
+        image: "{{ item.item.Image }}"
+        state: started
+        recreate: true
+        labels: "{{ item.item.Labels | default(omit) }}"
+      loop: "{{ common_docker_update_pull_results.results }}"
+      loop_control:
+        label: "{{ (item.item.Names | first) | regex_replace('^/', '') }}"
+      when:
+        - common_docker_update_force | bool or item.changed
+        - item.item.Labels['com.docker.compose.project.working_dir'] is not defined
+      tags:
+        - docker_update
+
+    - name: Recreate Compose Services When Images Change
+      ansible.builtin.command:
+        cmd: >-
+          docker compose
+          -f {{ item.item.Labels['com.docker.compose.project.config_files'] }}
+          --project-directory {{ item.item.Labels['com.docker.compose.project.working_dir'] }}
+          up -d {{ item.item.Labels['com.docker.compose.service'] }}
+      loop: "{{ common_docker_update_pull_results.results }}"
+      loop_control:
+        label: "{{ (item.item.Names | first) | regex_replace('^/', '') }}"
+      when:
+        - common_docker_update_force | bool or item.changed
+        - item.item.Labels['com.docker.compose.project.working_dir'] is defined
+        - item.item.Labels['com.docker.compose.project.config_files'] is defined
+        - item.item.Labels['com.docker.compose.service'] is defined
+      changed_when: true
+      tags:
+        - docker_update
+
+    - name: Ensure Updated Containers Are Running
+      community.docker.docker_container:
+        name: "{{ (item.item.Names | first) | regex_replace('^/', '') }}"
+        state: started
+      loop: "{{ common_docker_update_pull_results.results }}"
+      loop_control:
+        label: "{{ (item.item.Names | first) | regex_replace('^/', '') }}"
+      when:
+        - common_docker_update_force | bool or item.changed
+        - item.item.Labels['com.docker.compose.project.working_dir'] is not defined
+      tags:
+        - docker_update
+
+    - name: Report Docker Update Completion
+      ansible.builtin.debug:
+        msg: "Docker update workflow completed for {{ common_docker_update_discovered.containers | length }} discovered containers."
+      tags:
+        - docker_update
+  rescue:
+    - name: Fail Docker Update Workflow With Context
+      ansible.builtin.fail:
+        msg: "Docker update workflow failed. Review prior task output for the affected container."
+      tags:
+        - docker_update
