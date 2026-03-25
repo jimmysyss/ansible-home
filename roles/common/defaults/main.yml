@@ -16,3 +16,14 @@ common_reboot_enabled: false
 
 # Maximum wait time for host to come back after reboot.
 common_reboot_timeout: 900
+
+# Enables the docker update workflow in this role.
+# Note: tasks are additionally tagged with `never` and only run when explicitly tagged.
+common_docker_update_enabled: true
+
+# Forces a pull from registry and container recreation even when the image digest is unchanged.
+common_docker_update_force: false
+
+# Label filter to identify containers for the docker_update workflow.
+# Containers matching this label will be discovered and updated.
+common_docker_update_label: "autoupdate=true"
