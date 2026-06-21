@@ -43,3 +43,33 @@ Issue #5 validation target (server8):
 ansible-playbook -i inventory/production site.yml --limit server8.jimmysyss.com --check --diff -K
 ansible-playbook -i inventory/production site.yml --limit server8.jimmysyss.com -K
 ```
+
+## Ansible Vault
+
+Sensitive host variables (Portainer edge keys and IDs) are encrypted with Ansible Vault.
+
+### First-time setup
+
+Create `~/.vault_pass` containing your vault password, then restrict its permissions:
+```bash
+echo -n 'YOUR_VAULT_PASSWORD' > ~/.vault_pass
+chmod 600 ~/.vault_pass
+```
+
+The `vault_password_file = ~/.vault_pass` setting in `ansible.cfg` means Ansible picks it up automatically — no `--ask-vault-pass` flag needed.
+
+### Encrypting a new secret
+
+```bash
+ansible-vault encrypt_string 'PLAINTEXT_VALUE' --name 'variable_name'
+```
+
+Paste the resulting `!vault |` block directly into the relevant `host_vars/` or `group_vars/` file.
+
+### Re-keying (rotating the vault password)
+
+```bash
+# Re-encrypt all vault strings with a new password
+find host_vars group_vars -name "*.yml" | xargs ansible-vault rekey --new-vault-password-file /path/to/new_pass
+echo -n 'NEW_PASSWORD' > ~/.vault_pass
+```
